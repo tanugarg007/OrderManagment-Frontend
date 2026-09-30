@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import Login from "./login.jsx";
+import Register from "./Register.jsx";
+
 
 const navItems = [
   { to: "/", label: "Home", end: true },
@@ -11,15 +13,13 @@ const navItems = [
 ];
 
 function Navbar() {
-  console.log("NEW NAVBAR LOADED");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const location = useLocation();
-
+const [registerOpen, setRegisterOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 30);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -29,71 +29,140 @@ function Navbar() {
     };
   }, []);
 
+  const closeMobileMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <>
-      <nav className={`navbar${scrolled ? " scrolled" : ""}`}>
+      <header className={`navbar-wrapper ${scrolled ? "scrolled" : ""}`}>
+        <nav className="navbar">
 
-        {/* Logo */}
-        <Link to="/" className="logo">
-          Order<span>Management</span>
-        </Link>
+          {/* Logo */}
+          <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
+            <span className="logo-icon">
+              OM
+            </span>
 
-        {/* Desktop Menu */}
-        <div className="nav-links">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
+            <span className="logo-text">
+              Order<span>Management</span>
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="nav-links">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  isActive ? "nav-link active" : "nav-link"
+                }
+              >
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Right Actions */}
+          <div className="nav-actions">
+
+            <button
+              type="button"
+              className="login-btn"
+              onClick={() => setLoginOpen(true)}
             >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
+              <span>Login</span>
+              <span className="login-arrow">↗</span>
+            </button>
 
-        {/* Buttons */}
-        <div className="nav-actions">
-
-          {/* LOGIN BUTTON */}
- <button
+        <button
   type="button"
-  className="btn btn-outline"
+  className="register-btn"
   onClick={() => {
-    console.log("LOGIN BUTTON CLICKED");
-    setLoginOpen(true);
+    console.log("REGISTER BUTTON CLICKED");
+    setRegisterOpen(true);
   }}
 >
-  Login
+  Register
 </button>
+
+          </div>
+
+          {/* Mobile Menu Button */}
           <button
             type="button"
-            className="btn btn-primary"
+            className={`menu-toggle ${menuOpen ? "open" : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
           >
-            Register
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
+        </nav>
+
+        {/* Mobile Navigation */}
+        <div className={`mobile-menu ${menuOpen ? "show" : ""}`}>
+
+          <div className="mobile-nav-links">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                end={item.end}
+                onClick={closeMobileMenu}
+                className={({ isActive }) =>
+                  isActive
+                    ? "mobile-nav-link active"
+                    : "mobile-nav-link"
+                }
+              >
+                {item.label}
+                <span>→</span>
+              </NavLink>
+            ))}
+          </div>
+
+          <div className="mobile-actions">
+            <button
+              type="button"
+              className="mobile-login"
+              onClick={() => {
+                setLoginOpen(true);
+                closeMobileMenu();
+              }}
+            >
+              Login
+            </button>
+
+            <button
+              type="button"
+              className="mobile-register"
+              onClick={() => {
+                setRegisterOpen(true);
+                closeMobileMenu();
+              }}
+            >
+              Register
+            </button>
+          </div>
 
         </div>
+      </header>
 
-        {/* Mobile menu button */}
-        <button
-          type="button"
-          className="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          ☰
-        </button>
-
-      </nav>
-
-      {/* LOGIN POPUP */}
+      {/* Login Popup */}
       {loginOpen && (
         <Login
           onClose={() => setLoginOpen(false)}
         />
       )}
+
+      {/* Register Popup */}
+      {registerOpen && (
+  <Register onClose={() => setRegisterOpen(false)} />
+)}
     </>
   );
 }

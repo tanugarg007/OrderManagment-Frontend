@@ -2676,3 +2676,485 @@ button {
     padding: 30px 22px;
   }
 }
+
+
+/* ================================
+   REGISTER POPUP
+================================ */
+
+.register-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: registerOverlayIn 0.25s ease;
+}
+
+.register-popup {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 42px 42px 30px;
+  box-sizing: border-box;
+  border: 1px solid rgba(198, 131, 19, 0.28);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(198, 131, 19, 0.12),
+      transparent 32%
+    ),
+    #171717;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  color: #fff;
+  animation: registerPopupIn 0.35s ease;
+}
+
+/* Close Button */
+
+.register-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 5;
+}
+
+.register-close:hover {
+  background: #c68313;
+  border-color: #c68313;
+  transform: rotate(90deg);
+}
+
+/* Decorative circles */
+
+.register-decoration {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.register-decoration-one {
+  width: 180px;
+  height: 180px;
+  top: -100px;
+  right: -80px;
+  border: 1px solid rgba(198, 131, 19, 0.12);
+}
+
+.register-decoration-two {
+  width: 120px;
+  height: 120px;
+  bottom: -70px;
+  left: -60px;
+  border: 1px solid rgba(198, 131, 19, 0.1);
+}
+
+/* Header */
+
+.register-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.register-logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #c68313, #9b6209);
+  box-shadow:
+    0 12px 30px rgba(198, 131, 19, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.register-logo span {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.register-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(198, 131, 19, 0.3);
+  border-radius: 50px;
+  background: rgba(198, 131, 19, 0.08);
+  color: #d89a2d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.register-badge span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c68313;
+  box-shadow: 0 0 10px rgba(198, 131, 19, 0.8);
+}
+
+.register-header h2 {
+  margin: 0 0 9px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.register-header p {
+  margin: 0;
+  color: #a7a7a7;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Form */
+
+.register-form {
+  position: relative;
+  z-index: 2;
+}
+
+.register-field {
+  margin-bottom: 17px;
+}
+
+.register-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #e7e7e7;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.register-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 49px;
+  padding: 0 13px;
+  border: 1px solid #333;
+  border-radius: 11px;
+  background: #111;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.register-input-box:focus-within {
+  border-color: #c68313;
+  box-shadow: 0 0 0 3px rgba(198, 131, 19, 0.1);
+}
+
+.register-icon {
+  width: 28px;
+  color: #c68313;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.register-input-box input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 47px;
+  padding: 0 8px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+}
+
+.register-input-box input::placeholder {
+  color: #666;
+}
+
+/* Password button */
+
+.password-toggle {
+  border: none;
+  background: transparent;
+  color: #c68313;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.password-toggle:hover {
+  color: #e0a43d;
+}
+
+/* Password strength */
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+}
+
+.strength-line {
+  width: 70px;
+  height: 4px;
+  border-radius: 20px;
+  background: #444;
+}
+
+.strength-line.weak {
+  background: #b54b4b;
+  width: 30px;
+}
+
+.strength-line.medium {
+  background: #c68313;
+  width: 50px;
+}
+
+.strength-line.strong {
+  background: #5c9b62;
+  width: 70px;
+}
+
+.password-strength span {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.password-strength span.weak {
+  color: #d46b6b;
+}
+
+.password-strength span.medium {
+  color: #d89a2d;
+}
+
+.password-strength span.strong {
+  color: #76b77d;
+}
+
+/* Terms */
+
+.terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 18px 0;
+  color: #999;
+  font-size: 11px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.terms-row input {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  accent-color: #c68313;
+  cursor: pointer;
+}
+
+.terms-row button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #c68313;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.terms-row button:hover {
+  text-decoration: underline;
+}
+
+/* Message */
+
+.register-message {
+  margin-bottom: 15px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.register-message.success {
+  border: 1px solid rgba(92, 155, 98, 0.25);
+  background: rgba(92, 155, 98, 0.1);
+  color: #82c789;
+}
+
+.register-message.error {
+  border: 1px solid rgba(181, 75, 75, 0.25);
+  background: rgba(181, 75, 75, 0.1);
+  color: #e27b7b;
+}
+
+/* Create Account */
+
+.register-submit {
+  width: 100%;
+  min-height: 51px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #c68313, #a86c0c);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(198, 131, 19, 0.2);
+  transition: all 0.25s ease;
+}
+
+.register-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(198, 131, 19, 0.3);
+}
+
+.register-submit-arrow {
+  font-size: 17px;
+  transition: transform 0.25s ease;
+}
+
+.register-submit:hover .register-submit-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Bottom Login */
+
+.register-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 22px;
+  color: #888;
+  font-size: 12px;
+}
+
+.register-login button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #c68313;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.register-login button:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+
+@keyframes registerOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes registerPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Scrollbar */
+
+.register-popup::-webkit-scrollbar {
+  width: 5px;
+}
+
+.register-popup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.register-popup::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+/* ================================
+   REGISTER RESPONSIVE
+================================ */
+
+@media (max-width: 600px) {
+  .register-overlay {
+    padding: 12px;
+  }
+
+  .register-popup {
+    max-height: 95vh;
+    padding: 35px 22px 25px;
+    border-radius: 20px;
+  }
+
+  .register-header h2 {
+    font-size: 23px;
+  }
+
+  .register-header p {
+    font-size: 11px;
+  }
+
+  .register-logo {
+    width: 55px;
+    height: 55px;
+    border-radius: 15px;
+  }
+
+  .register-field {
+    margin-bottom: 14px;
+  }
+
+  .register-input-box {
+    min-height: 47px;
+  }
+
+  .register-input-box input {
+    height: 45px;
+  }
+}
