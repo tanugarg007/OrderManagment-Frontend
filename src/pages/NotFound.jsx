@@ -11,7 +11,6 @@ function NotFound() {
         </p>
         <div className="hero-actions notfound-actions">
           <Link to="/" className="btn btn-primary btn-lg">Back to Home</Link>
-          <Link to="/dashboard" className="btn btn-outline btn-lg">Go to Dashboard</Link>
         </div>
       </div>
     </section>

@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 function Layout() {
-  console.log("LAYOUT COMPONENT LOADED");
   const { pathname } = useLocation();
 
   useEffect(() => {

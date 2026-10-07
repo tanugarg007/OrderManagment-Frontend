@@ -1,15 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getStoredSession, setStoredSession } from "../auth.js";
 import "../App.css";
 
-function Register({ onClose }) {
+function Register({ onClose, onSwitchToLogin, onSuccess }) {
+  const navigate = useNavigate();
+  const session = getStoredSession();
+  const isAdminCreator = session?.user?.role === "admin";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [messageType, setMessageType] = useState("");
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    role: "user",
     terms: false,
   });
 
@@ -24,6 +32,7 @@ function Register({ onClose }) {
     }));
 
     setMessage("");
+    setMessageType("");
   };
 
   const getPasswordStrength = () => {
@@ -44,22 +53,76 @@ function Register({ onClose }) {
     return "medium";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
       setMessage("Passwords do not match.");
+      setMessageType("error");
       return;
     }
 
     if (!form.terms) {
       setMessage("Please accept the Terms & Conditions.");
+      setMessageType("error");
       return;
     }
 
-    console.log("Register submitted:", form);
+    setIsSubmitting(true);
+    setMessage("");
 
-    setMessage("Account created successfully!");
+    try {
+      const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+      const response = await fetch(`${apiBaseUrl}/users/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(isAdminCreator
+            ? { Authorization: `Bearer ${session.token}` }
+            : {}),
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        }),
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          payload.message || `Account registration failed (${response.status}).`
+        );
+      }
+      if (
+        typeof payload.token !== "string" ||
+        !payload.user ||
+        payload.user.role !== form.role
+      ) {
+        throw new Error("The registration API returned an invalid account.");
+      }
+
+      setMessage("Account created successfully!");
+      setMessageType("success");
+      if (isAdminCreator) {
+        return;
+      }
+
+      setStoredSession({ token: payload.token, user: payload.user });
+      onSuccess?.(payload.user);
+      onClose();
+      navigate(form.role === "admin" ? "/admin" : "/", {
+        replace: true,
+      });
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not create your account."
+      );
+      setMessageType("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const passwordStrength = getPasswordStrength();
@@ -133,6 +196,23 @@ function Register({ onClose }) {
                 placeholder="Enter your email"
                 required
               />
+            </div>
+          </div>
+
+          <div className="register-field">
+            <label htmlFor="register-role">Account Role</label>
+            <div className="register-input-box">
+              <span className="register-icon" aria-hidden="true">♙</span>
+              <select
+                id="register-role"
+                className="register-role-select"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
           </div>
 
@@ -217,17 +297,17 @@ function Register({ onClose }) {
           </label>
 
           {message && (
-            <div
-              className={`register-message ${
-                message.includes("successfully") ? "success" : "error"
-              }`}
-            >
+            <div className={`register-message ${messageType}`} role="status">
               {message}
             </div>
           )}
 
-          <button type="submit" className="register-submit">
-            <span>Create Account</span>
+          <button
+            type="submit"
+            className="register-submit"
+            disabled={isSubmitting}
+          >
+            <span>{isSubmitting ? "Creating Account…" : "Create Account"}</span>
             <span className="register-submit-arrow">↗</span>
           </button>
         </form>
@@ -235,7 +315,10 @@ function Register({ onClose }) {
         <div className="register-login">
           <span>Already have an account?</span>
 
-          <button type="button" onClick={onClose}>
+          <button
+            type="button"
+            onClick={onSwitchToLogin || onClose}
+          >
             Sign In
           </button>
         </div>
