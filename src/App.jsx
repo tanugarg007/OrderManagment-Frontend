@@ -7,6 +7,7 @@ import AdminDashboard from "./Admin/admindashboard.jsx";
 import AdminOrders from "./Admin/adminorders.jsx";
 import AdminProducts from "./Admin/adminproducts.jsx";
 import AdminCustomers from "./Admin/admincustomers.jsx";
+import AdminStaff from "./Admin/adminstaff.jsx";
 
 // User pages
 import Layout from "./components/Layout.jsx";
@@ -18,9 +19,18 @@ import PaymentMethod from "./pages/PaymentMethod.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import Contact from "./pages/Contact.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import SuperAdminLogin from "./pages/SuperAdminLogin.jsx";
 
 // Auth / role
 import RoleRoute from "./components/RoleRoute.jsx";
+import { getStoredSession } from "./auth.js";
+
+const AdminLanding = () => {
+  const session = getStoredSession();
+  return session?.user?.role === "inventory"
+    ? <Navigate to="/admin/products" replace />
+    : <AdminDashboard />;
+};
 
 function App() {
   return (
@@ -49,23 +59,26 @@ function App() {
           path="/dashboard"
           element={<Navigate to="/" replace />}
         />
+        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
 
         {/* ================= ADMIN PANEL ================= */}
-        <Route element={<RoleRoute role="admin" />}>
+        <Route
+          element={
+            <RoleRoute
+              roles={["admin", "superadmin", "inventory"]}
+              redirectTo="/superadmin/login"
+            />
+          }
+        >
           <Route path="/admin" element={<AdminLayout />}>
-
-            {/* /admin */}
-            <Route index element={<AdminDashboard />} />
-
-            {/* /admin/orders */}
-            <Route path="orders" element={<AdminOrders />} />
-
-            {/* /admin/products */}
             <Route path="products" element={<AdminProducts />} />
 
-            {/* /admin/users */}
-            <Route path="users" element={<AdminCustomers />} />
-
+            <Route index element={<AdminLanding />} />
+            <Route element={<RoleRoute roles={["admin", "superadmin"]} />}>
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminCustomers />} />
+              <Route path="staff" element={<AdminStaff />} />
+            </Route>
           </Route>
         </Route>
 

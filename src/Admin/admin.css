@@ -2981,6 +2981,57 @@
   .product-form-footer button {
     flex: 1;
   }
+
+  .staff-create-form {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-form-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+.staff-create-card,
+.staff-list-card {
+  margin-top: 20px;
+}
+
+.staff-create-card .premium-card-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.staff-create-card .premium-card-header p {
+  max-width: 620px;
+}
+
+.staff-create-form {
+  padding: 20px 0 0;
+}
+
+.staff-form-footer {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-form-footer .admin-table-error,
+.staff-success-message {
+  margin: 0;
+}
+
+.staff-success-message {
+  color: #3b7751;
+  font-size: 11px;
+}
+
+.staff-create-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .profile-logout-btn {

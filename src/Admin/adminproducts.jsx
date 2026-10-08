@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import AddProductForm from "./AddProductForm";
+import { getAuthorizationHeaders, getStoredSession } from "../auth.js";
 
 const normalizeProduct = (item) => {
   const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
@@ -58,7 +59,9 @@ function AdminProducts() {
 
       try {
         const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
-        const response = await fetch(`${apiBaseUrl}/users/items`);
+        const response = await fetch(`${apiBaseUrl}/users/items`, {
+          headers: getAuthorizationHeaders(),
+        });
 
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -110,6 +113,7 @@ function AdminProducts() {
         `${apiBaseUrl}/users/items${productId ? `/${encodeURIComponent(productId)}` : ""}`,
         {
         method: productId ? "PATCH" : "POST",
+        headers: getAuthorizationHeaders(),
         body: formData,
         }
 
@@ -151,7 +155,10 @@ function AdminProducts() {
       const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
       const response = await fetch(
         `${apiBaseUrl}/users/items/${encodeURIComponent(product.id)}`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: getAuthorizationHeaders(),
+        }
       );
       const payload = await response.json().catch(() => ({}));
 
@@ -177,6 +184,7 @@ function AdminProducts() {
   };
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
+  const isInventoryRole = getStoredSession()?.user?.role === "inventory";
 
   const filteredProducts = products.filter((product) =>
     [
@@ -207,12 +215,11 @@ function AdminProducts() {
           </p>
         </div>
 
-        <Link
-          className="section-back-link"
-          to="/admin"
-        >
-          Back to overview
-        </Link>
+        {!isInventoryRole && (
+          <Link className="section-back-link" to="/admin">
+            Back to overview
+          </Link>
+        )}
       </div>
 
       <section className="premium-card section-table-card">

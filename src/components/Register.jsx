@@ -17,7 +17,6 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user",
     terms: false,
   });
 
@@ -73,7 +72,7 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
 
     try {
       const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
-      const response = await fetch(`${apiBaseUrl}/users/user`, {
+      const response = await fetch(`${apiBaseUrl}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +84,6 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
           name: form.name,
           email: form.email,
           password: form.password,
-          role: form.role,
         }),
       });
       const payload = await response.json().catch(() => ({}));
@@ -98,7 +96,7 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
       if (
         typeof payload.token !== "string" ||
         !payload.user ||
-        payload.user.role !== form.role
+        payload.user.role !== "user"
       ) {
         throw new Error("The registration API returned an invalid account.");
       }
@@ -112,7 +110,7 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
       setStoredSession({ token: payload.token, user: payload.user });
       onSuccess?.(payload.user);
       onClose();
-      navigate(form.role === "admin" ? "/admin" : "/", {
+      navigate("/", {
         replace: true,
       });
     } catch (error) {
@@ -196,23 +194,6 @@ function Register({ onClose, onSwitchToLogin, onSuccess }) {
                 placeholder="Enter your email"
                 required
               />
-            </div>
-          </div>
-
-          <div className="register-field">
-            <label htmlFor="register-role">Account Role</label>
-            <div className="register-input-box">
-              <span className="register-icon" aria-hidden="true">♙</span>
-              <select
-                id="register-role"
-                className="register-role-select"
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
             </div>
           </div>
 

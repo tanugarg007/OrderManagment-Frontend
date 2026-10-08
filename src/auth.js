@@ -17,6 +17,14 @@ export const getStoredSession = () => {
   }
 };
 
+export const getAuthorizationHeaders = () => {
+  const session = getStoredSession();
+  if (!session?.token) {
+    throw new Error("Please sign in again to continue.");
+  }
+  return { Authorization: `Bearer ${session.token}` };
+};
+
 export const setStoredSession = (session) => {
   localStorage.setItem("orderflow-session", JSON.stringify(session));
   window.dispatchEvent(new Event("orderflow-session-change"));

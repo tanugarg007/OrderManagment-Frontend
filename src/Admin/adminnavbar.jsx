@@ -6,15 +6,12 @@ import {
   LogOut,
   UserPlus,
 } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearStoredSession, getStoredSession } from "../auth.js";
-import Register from "../components/Register.jsx";
 
 const AdminNavbar = ({ onMenuClick, searchTerm, onSearchChange }) => {
   const navigate = useNavigate();
   const session = getStoredSession();
-  const [registerOpen, setRegisterOpen] = useState(false);
 
   const handleLogout = () => {
     clearStoredSession();
@@ -79,10 +76,11 @@ const AdminNavbar = ({ onMenuClick, searchTerm, onSearchChange }) => {
         <button
           type="button"
           className="admin-add-account-btn"
-          onClick={() => setRegisterOpen(true)}
+          onClick={() => navigate("/admin/staff")}
+          hidden={session?.user?.role === "inventory"}
         >
           <UserPlus size={16} />
-          <span>Add account</span>
+          <span>Add staff</span>
         </button>
 
         <button
@@ -122,9 +120,6 @@ const AdminNavbar = ({ onMenuClick, searchTerm, onSearchChange }) => {
       </div>
 
       </header>
-      {registerOpen && (
-        <Register onClose={() => setRegisterOpen(false)} />
-      )}
     </>
   );
 };

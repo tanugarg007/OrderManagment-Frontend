@@ -6,11 +6,16 @@ import {
   CircleHelp,
   LayoutDashboard,
   Package,
+  ShieldCheck,
   ShoppingCart,
   Users,
 } from "lucide-react";
+import { getStoredSession } from "../auth.js";
 
 const AdminSidebar = ({ isOpen, onClose }) => {
+  const role = getStoredSession()?.user?.role;
+  const canManageDashboard = role === "admin" || role === "superadmin";
+
   return (
     <aside className={`admin-sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
@@ -31,24 +36,36 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
       <nav className="sidebar-nav">
         <span className="sidebar-section-label">WORKSPACE</span>
-        <NavLink to="/admin" end onClick={onClose}>
-          <LayoutDashboard size={18} />
-          <span>Overview</span>
-          <span className="nav-active-marker" />
-        </NavLink>
-        <NavLink to="/admin/orders" onClick={onClose}>
-          <ShoppingCart size={18} />
-          <span>Orders</span>
-          <span className="nav-count">12</span>
-        </NavLink>
+        {canManageDashboard && (
+          <>
+            <NavLink to="/admin" end onClick={onClose}>
+              <LayoutDashboard size={18} />
+              <span>Overview</span>
+              <span className="nav-active-marker" />
+            </NavLink>
+            <NavLink to="/admin/orders" onClick={onClose}>
+              <ShoppingCart size={18} />
+              <span>Orders</span>
+              <span className="nav-count">12</span>
+            </NavLink>
+          </>
+        )}
         <NavLink to="/admin/products" onClick={onClose}>
           <Package size={18} />
-          <span>Products</span>
+          <span>Inventory</span>
         </NavLink>
-        <NavLink to="/admin/users" onClick={onClose}>
-          <Users size={18} />
-          <span>Customers</span>
-        </NavLink>
+        {canManageDashboard && (
+          <>
+            <NavLink to="/admin/users" onClick={onClose}>
+              <Users size={18} />
+              <span>Customers</span>
+            </NavLink>
+            <NavLink to="/admin/staff" onClick={onClose}>
+              <ShieldCheck size={18} />
+              <span>Staff accounts</span>
+            </NavLink>
+          </>
+        )}
       </nav>
 
       <div className="sidebar-spacer" />
@@ -72,7 +89,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         <div className="account-avatar">AD</div>
         <div className="account-copy">
           <strong>Alexandra Davis</strong>
-          <span>Owner account</span>
+          <span>{role === "inventory" ? "Inventory staff" : "Administrator"}</span>
         </div>
         <span className="account-status" />
       </div>

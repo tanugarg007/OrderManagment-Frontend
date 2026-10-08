@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import AddOrderForm from "./AddOrderForm";
+import { getAuthorizationHeaders } from "../auth.js";
 
 const columns = [
   "Order",
@@ -45,7 +46,9 @@ const AdminOrders = () => {
 
       try {
         const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
-        const response = await fetch(`${apiBaseUrl}/users/orders`);
+        const response = await fetch(`${apiBaseUrl}/users/orders`, {
+          headers: getAuthorizationHeaders(),
+        });
         const payload = await response.json().catch(() => ({}));
 
         if (!response.ok) {
@@ -146,7 +149,10 @@ const AdminOrders = () => {
       `${apiBaseUrl}/users/orders${orderId ? `/${encodeURIComponent(orderId)}` : ""}`,
       {
         method: orderId ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthorizationHeaders(),
+        },
         body: JSON.stringify(orderData),
       }
     );
@@ -176,7 +182,10 @@ const AdminOrders = () => {
       const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
       const response = await fetch(
         `${apiBaseUrl}/users/orders/${encodeURIComponent(order.id)}`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: getAuthorizationHeaders(),
+        }
       );
       const payload = await response.json().catch(() => ({}));
 

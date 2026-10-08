@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setStoredSession } from "../auth.js";
 import "./login.css";
 
-function Login({ onClose, onSuccess, onSwitchToRegister }) {
+function Login({ mode = "user", onClose = () => {}, onSuccess, onSwitchToRegister }) {
   const navigate = useNavigate();
+  const isStaffLogin = mode === "staff";
   const [step, setStep] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -38,17 +39,21 @@ function Login({ onClose, onSuccess, onSwitchToRegister }) {
       if (
         typeof payload.token !== "string" ||
         !payload.user ||
-        !["admin", "user"].includes(payload.user.role)
+        (isStaffLogin
+          ? !["admin", "superadmin", "inventory"].includes(payload.user.role)
+          : payload.user.role !== "user")
       ) {
-        throw new Error("The login API returned an invalid account.");
+        throw new Error(
+          isStaffLogin
+            ? "This is not a staff account. Customer accounts should sign in from Profile."
+            : "Only customer accounts can sign in here. Staff accounts should use /superadmin/login."
+        );
       }
 
       setStoredSession({ token: payload.token, user: payload.user });
       onSuccess?.(payload.user);
       onClose(true);
-      navigate(payload.user.role === "admin" ? "/admin" : "/", {
-        replace: true,
-      });
+      navigate(isStaffLogin ? "/admin" : "/", { replace: true });
     } catch (loginError) {
       setError(
         loginError instanceof Error ? loginError.message : "Could not sign in."
@@ -78,11 +83,15 @@ function Login({ onClose, onSuccess, onSwitchToRegister }) {
 
         <div className="login-header">
           <div className="login-logo">OM</div>
-          <span className="login-eyebrow">YOUR ORDER MANAGEMENT ACCOUNT</span>
+          <span className="login-eyebrow">
+            {isStaffLogin ? "STAFF ACCESS" : "YOUR ORDER MANAGEMENT ACCOUNT"}
+          </span>
           <h2 id="login-title">{step === "email" ? "Sign in" : "Welcome back"}</h2>
           <p>
             {step === "email"
-              ? "Enter your email to access your account"
+              ? isStaffLogin
+                ? "Sign in with your SuperAdmin or Inventory account"
+                : "Enter your email to access your customer account"
               : `Continue securely as ${email}`}
           </p>
         </div>
@@ -156,7 +165,7 @@ function Login({ onClose, onSuccess, onSwitchToRegister }) {
           </button>
         </form>
 
-        <div className="login-register">
+        {!isStaffLogin && <div className="login-register">
           <p>
             <span>New to Order Management?</span>
             <button
@@ -167,7 +176,17 @@ function Login({ onClose, onSuccess, onSwitchToRegister }) {
               Create your account
             </button>
           </p>
-        </div>
+          <Link to="/superadmin/login" onClick={() => onClose(false)}>
+            SuperAdmin / Inventory sign in
+          </Link>
+        </div>}
+        {isStaffLogin && (
+          <div className="login-register">
+            <Link to="/" onClick={() => onClose(false)}>
+              Return to customer store
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
